@@ -39,6 +39,10 @@ ABaseTank::ABaseTank()
 		this->DeathParticleSystem->SetTemplate(DeathParticleAsset.Object);
 	}
 	this->DeathParticleSystem->bHiddenInGame = true;
+
+	// Init death sound
+	ConstructorHelpers::FObjectFinder<USoundBase> DeathSoundAsset(TEXT("/Script/Engine.SoundWave'/Game/Assets/Audio/Explode_Audio.Explode_Audio'"));
+	if (DeathSoundAsset.Succeeded()) this->DeathSound = DeathSoundAsset.Object;
 }
 
 UStaticMesh* ABaseTank::GetBaseTankMesh(FString Path)

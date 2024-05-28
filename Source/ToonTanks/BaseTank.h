@@ -52,4 +52,7 @@ public:
 
 	UPROPERTY()
 	TObjectPtr<UParticleSystemComponent> DeathParticleSystem;
+
+	UPROPERTY()
+	class USoundBase* DeathSound;
 };
