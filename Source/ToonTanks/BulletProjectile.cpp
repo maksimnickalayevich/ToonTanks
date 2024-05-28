@@ -55,6 +55,14 @@ ABulletProjectile::ABulletProjectile()
 		this->TrailParticleSystem->SetTemplate(TrailParticlesAsset.Object);
 	}
 	this->TrailParticleSystem->bHiddenInGame = false;
+
+	// Init sounds
+	ConstructorHelpers::FObjectFinder<USoundBase> BaseProjectileSoundAsset(TEXT("/Script/Engine.SoundWave'/Game/Assets/Audio/Thud_Audio.Thud_Audio'"));
+	if (BaseProjectileSoundAsset.Succeeded())
+	{
+		this->LaunchSound = BaseProjectileSoundAsset.Object;
+		this->HitSound = BaseProjectileSoundAsset.Object;
+	}
 }
 
 void ABulletProjectile::EnableCapsuleCollider() const
@@ -75,6 +83,12 @@ void ABulletProjectile::BeginPlay()
 
 	// Create Delegate to catch collision hits
 	this->CapsuleCollider->OnComponentHit.AddDynamic(this, &ABulletProjectile::OnActorHitCallback);
+	UGameplayStatics::PlaySoundAtLocation(
+		this,
+		this->LaunchSound,
+		this->GetActorLocation(),
+		FRotator::ZeroRotator
+	);
 }
 
 void ABulletProjectile::OnActorHitCallback(UPrimitiveComponent* HitComponent, AActor* OtherActor,

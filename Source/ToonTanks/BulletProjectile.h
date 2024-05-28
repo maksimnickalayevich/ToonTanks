@@ -56,4 +56,10 @@ public:
 
 	UPROPERTY()
 	TObjectPtr<class UParticleSystemComponent> TrailParticleSystem;
+
+	UPROPERTY()
+	class USoundBase* LaunchSound;
+
+	UPROPERTY()
+	class USoundBase* HitSound;
 };

@@ -66,26 +66,41 @@ void UHealthComponent::DestroyOwnerActor()
 	if (Owner->IsA(AEnemyTurret::StaticClass()))
 	{
 		AEnemyTurret* Enemy = Cast<AEnemyTurret>(Owner);
+
+		// Spawn death particles
 		UGameplayStatics::SpawnEmitterAtLocation(
 			Enemy,
 			Enemy->DeathParticleSystem->Template,
 			Enemy->GetActorLocation(),
 			Enemy->GetActorRotation()
 		);
+		UGameplayStatics::PlaySoundAtLocation(
+			Enemy,
+			Enemy->DeathSound,
+			Enemy->GetActorLocation(),
+			FRotator::ZeroRotator
+		);
+
 		this->TTGameMode->SetEnemyTowersAmount(this->TTGameMode->GetEnemyTowersAmount() - 1);
 	}
 	else if (Owner->IsA(APlayerTank::StaticClass()))
 	{
 		this->TTGameMode->SetIsPlayerAlive(false);
 		APlayerTank* Player = Cast<APlayerTank>(Owner);
-
+		
+		// Spawn death particles
 		UGameplayStatics::SpawnEmitterAtLocation(
 			Player,
 			Player->DeathParticleSystem->Template,
 			Player->GetActorLocation(),
 			Player->GetActorRotation()
 		);
-		
+		UGameplayStatics::PlaySoundAtLocation(
+			Player,
+			Player->DeathSound,
+			Player->GetActorLocation(),
+			FRotator::ZeroRotator
+		);
 		Player->PlayerHUDInstance->RemoveFromParent();
 	}
 	
