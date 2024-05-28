@@ -35,18 +35,26 @@ ABulletProjectile::ABulletProjectile()
 	BulletMeshComp->SetupAttachment(CapsuleCollider);
 	BulletMeshComp->SetGenerateOverlapEvents(false);
 
-	// Init particle system
-	// ConstructorHelpers::FObjectFinder<UParticleSystem> HitParticlesAsset(TEXT("/Script/Engine.ParticleSystem'/Game/Assets/Effects/P_HitEffect.P_HitEffect'"));
-	// ConstructorHelpers::FObjectFinder<UParticleSystem> TrailParticlesAsset(TEXT("/Script/Engine.ParticleSystem'/Game/Assets/Effects/P_ProjectileTrail.P_ProjectileTrail'"));
-	//
-	// this->HitParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(FName("HitParticleComponentSystem"));
-	// if (HitParticlesAsset.Succeeded())
-	// {
-	// 	// Another Template that can be setup later when necessary
-	// 	this->HitParticleSystem->SetTemplate(HitParticlesAsset.Object);
-	// 	// this->TrailParticleSystem->SetTemplate(TrailParticlesAsset.Object);
-	// }
+	// Init hit particles system
+	ConstructorHelpers::FObjectFinder<UParticleSystem> HitParticlesAsset(TEXT("/Script/Engine.ParticleSystem'/Game/Assets/Effects/P_HitEffect.P_HitEffect'"));
+	this->HitParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(FName("HitParticleComponentSystem"));
+	this->HitParticleSystem->SetupAttachment(this->CapsuleCollider);
+	if (HitParticlesAsset.Succeeded())
+	{
+		// Another Template that can be setup later when necessary
+		this->HitParticleSystem->SetTemplate(HitParticlesAsset.Object);
+	}
+	this->HitParticleSystem->bHiddenInGame = true;
+	this->HitParticleSystem->bAutoDestroy = false;
 
+	ConstructorHelpers::FObjectFinder<UParticleSystem> TrailParticlesAsset(TEXT("/Script/Engine.ParticleSystem'/Game/Assets/Effects/P_ProjectileTrail.P_ProjectileTrail'"));
+	this->TrailParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(FName("TrailParticleComponentSystem"));
+	this->TrailParticleSystem->SetupAttachment(this->CapsuleCollider);
+	if (TrailParticlesAsset.Succeeded())
+	{
+		this->TrailParticleSystem->SetTemplate(TrailParticlesAsset.Object);
+	}
+	this->TrailParticleSystem->bHiddenInGame = false;
 }
 
 void ABulletProjectile::EnableCapsuleCollider() const
@@ -74,13 +82,12 @@ void ABulletProjectile::OnActorHitCallback(UPrimitiveComponent* HitComponent, AA
 {
 	if (!this->IsActive) return;
 	this->DealDamageTo(OtherActor);
-	// Spawn Particles
-	// UGameplayStatics::SpawnEmitterAtLocation(
-	// 	this,
-	// 	this->HitParticleSystem->Template,
-	// 	this->GetActorLocation()
-	// );
-
+	UGameplayStatics::SpawnEmitterAtLocation(
+this,
+		  this->HitParticleSystem->Template,
+			this->GetActorLocation(),
+			this->GetActorRotation()
+		);
 	// Disable collision to ensure no more collision will happen while moving Player Actor
 	this->CapsuleCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	this->IsActive = false;
@@ -124,15 +131,6 @@ void ABulletProjectile::Move(float DeltaTime)
 void ABulletProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	// Spawn Trail
-	// UGameplayStatics::SpawnEmitterAttached(
-	// 	this->TrailParticleSystem->Template,
-	// 	RootComponent,
-	// 	NAME_None,
-	// 	this->GetActorLocation()
-	// );
-	
 	this->Move(DeltaTime);
 }
 

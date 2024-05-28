@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Helpers/Macroses.h"
+#include "Particles/ParticleSystemComponent.h"
 
 
 // Sets default values
@@ -30,6 +31,14 @@ ABaseTank::ABaseTank()
 	ProjectileSpawnPoint->SetupAttachment(TurretMesh);
 
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(FName("Actor Health"));
+
+	ConstructorHelpers::FObjectFinder<UParticleSystem> DeathParticleAsset(TEXT("/Script/Engine.ParticleSystem'/Game/Assets/Effects/P_DeathEffect.P_DeathEffect'"));
+	this->DeathParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(FName("DeathParticleSystemComponent"));
+	if (DeathParticleAsset.Succeeded())
+	{
+		this->DeathParticleSystem->SetTemplate(DeathParticleAsset.Object);
+	}
+	this->DeathParticleSystem->bHiddenInGame = true;
 }
 
 UStaticMesh* ABaseTank::GetBaseTankMesh(FString Path)

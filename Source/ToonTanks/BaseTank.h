@@ -50,4 +50,6 @@ public:
 	
 	UHealthComponent* GetHealthComponent();
 
+	UPROPERTY()
+	TObjectPtr<UParticleSystemComponent> DeathParticleSystem;
 };
