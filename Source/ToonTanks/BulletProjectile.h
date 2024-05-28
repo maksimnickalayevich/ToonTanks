@@ -54,6 +54,6 @@ public:
 	UPROPERTY()
 	TObjectPtr<class UParticleSystemComponent> HitParticleSystem;
 
-	// UPROPERTY()
-	// TObjectPtr<class UParticleSystemComponent> TrailParticleSystem;
+	UPROPERTY()
+	TObjectPtr<class UParticleSystemComponent> TrailParticleSystem;
 };

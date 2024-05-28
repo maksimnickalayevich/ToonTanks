@@ -7,6 +7,7 @@
 #include "PlayerHUD.h"
 #include "ToonTanksGameMode.h"
 #include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent(): TTGameMode(nullptr)
@@ -64,12 +65,27 @@ void UHealthComponent::DestroyOwnerActor()
 
 	if (Owner->IsA(AEnemyTurret::StaticClass()))
 	{
+		AEnemyTurret* Enemy = Cast<AEnemyTurret>(Owner);
+		UGameplayStatics::SpawnEmitterAtLocation(
+			Enemy,
+			Enemy->DeathParticleSystem->Template,
+			Enemy->GetActorLocation(),
+			Enemy->GetActorRotation()
+		);
 		this->TTGameMode->SetEnemyTowersAmount(this->TTGameMode->GetEnemyTowersAmount() - 1);
 	}
 	else if (Owner->IsA(APlayerTank::StaticClass()))
 	{
 		this->TTGameMode->SetIsPlayerAlive(false);
 		APlayerTank* Player = Cast<APlayerTank>(Owner);
+
+		UGameplayStatics::SpawnEmitterAtLocation(
+			Player,
+			Player->DeathParticleSystem->Template,
+			Player->GetActorLocation(),
+			Player->GetActorRotation()
+		);
+		
 		Player->PlayerHUDInstance->RemoveFromParent();
 	}
 	
